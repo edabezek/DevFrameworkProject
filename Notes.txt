@@ -1,4 +1,5 @@
-DataAccess      : Veritabanýnda insert-update-delete sorgularýný çalýþtýracaðýmýz katman. Orm implementasyonlarý bu katmanda.
+DataAccess      : Veritabanýnda insert-update-delete sorgularýný çalýþtýracaðýmýz katman. Orm implementasyonlarý bu katmanda.EF ile baþlayýp,NHiber
+				nate ekleyeceðiz.
 Business        : Projeyi ilgilendiren iþ süreçlerini kodlarýz.Örneðin bir kiþinin ehliyete ihtiyacý var biz bu kiþiye ehliyet verelim
 			mi diye burada kodlarýz.Arayüz ile veritabaný iletiþimini saðladýk.
 Core            : Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Validasyon yönetimi,Rol bazlý güvenlik ve diðer araçlarýmýzý ,veritabaný
@@ -6,9 +7,12 @@ Core            : Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Val
 
 Proje Detaylarý : 
 			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak
+Kullanýlan Paketler : 
+--DevFramework.Core => Entity Framework 6.1.3
 
 Katmanlar       :
 DevFramework.Core Katmaný 
+
 
 --IEntityRepository : where T : class ,referans tip olmalý
 					-new() newlenebilir olmalý
@@ -22,4 +26,13 @@ DevFramework.Core Katmaný
 
 --IQueryableRepository : Listlerle çalýþtýðýmýz zaman context'i açýp kapatýrýz.Queryable operasyonlarýnýn, businnes tarafýnda çalýþtýrýlabilmesi 
 					(Context kapanmadan) için de bir repository yazacaðýz.(Not: IQueryable , IEnumerable dan hýzlýdýr ve serverda sorgu yapar.)
-					-Table operasyonunda readonly yapýyoruz,Bir context'e atttacht olacaðýz ona baðlý olarak sorgu yapacaðýz.
+					-Table operasyonunda readonly yapýyoruz,Bir context'e attach olacaðýz ona baðlý olarak sorgu yapacaðýz.
+--EFEntityRepositoryBase : Burada iki nesneye ihtiyacýmýz olacak; TEntity:veritabaný nesnesi,TContext:orm implementasyonu almýþ nesne ,hangi contexti
+					gönderirsek onu alacak.
+--EFQueryableRepositoryBase : 
+					-Table kýsmýnda  bir tabloya attach	olup o tablo üzerinden hangi nesneyi verirsek query çalýþtýrmamýzý saðlayacak
+					-Context'e ihtiyacýmýz var, inject ediyoruz,böylelikle bu katmanýn herhangi bir baðlýlýðý olmayacak.
+					-Buradaki tablo DbSet'e karþýlýk geliyor, o yüzden önceden gönderilen entity'e göre abone olacak
+					
+					
+					
