@@ -1,0 +1,25 @@
+DataAccess      : Veritabanýnda insert-update-delete sorgularýný çalýþtýracaðýmýz katman. Orm implementasyonlarý bu katmanda.
+Business        : Projeyi ilgilendiren iþ süreçlerini kodlarýz.Örneðin bir kiþinin ehliyete ihtiyacý var biz bu kiþiye ehliyet verelim
+			mi diye burada kodlarýz.Arayüz ile veritabaný iletiþimini saðladýk.
+Core            : Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Validasyon yönetimi,Rol bazlý güvenlik ve diðer araçlarýmýzý ,veritabaný
+			Orm entegrasyonlarýný burada yaptýk
+
+Proje Detaylarý : 
+			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak
+
+Katmanlar       :
+DevFramework.Core Katmaný 
+
+--IEntityRepository : where T : class ,referans tip olmalý
+					-new() newlenebilir olmalý
+					-IEntity ,sadece entity almasýný saðlýyoruz.
+					-Liste döndürecek GetList'de Linq Expression kullandýk, çünkü datanýn tümü yada where koþulu ile belirtilmiþ kýsmýný getirmek 
+					istiyoruz.Bu baðlamda bir metot delegesi göndereceðiz , func ile .filter hem boþ gönderilebilir(yani herhangi bir filtre 
+					göndermeyebilir,o zaman tümünü getirecek. ama filtre gönderirse datanýn filtrelenmiþ versiyonunu db den getirecek)
+					-Get ile tek nesne döndürebiliriz,burada da filtre yolladýk
+					-Add ve Update,datanýn eklenmiþ hali ile döndüreceðiz.
+					-Delete de primary key ile silinmesini saðlayacaðýz
+
+--IQueryableRepository : Listlerle çalýþtýðýmýz zaman context'i açýp kapatýrýz.Queryable operasyonlarýnýn, businnes tarafýnda çalýþtýrýlabilmesi 
+					(Context kapanmadan) için de bir repository yazacaðýz.(Not: IQueryable , IEnumerable dan hýzlýdýr ve serverda sorgu yapar.)
+					-Table operasyonunda readonly yapýyoruz,Bir context'e atttacht olacaðýz ona baðlý olarak sorgu yapacaðýz.
