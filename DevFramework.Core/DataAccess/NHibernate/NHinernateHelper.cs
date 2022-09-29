@@ -14,7 +14,7 @@ namespace DevFramework.Core.DataAccess.NHibernate
         {
             get { return _sessionFactory ?? (_sessionFactory = InitializationFactory()); } //session factory varsa döndür yoksa sf initialize et
         }
-        protected abstract ISessionFactory InitializationFactory(); //oracle veya sql göndericez
+        protected abstract ISessionFactory InitializationFactory(); //oracle veya sql veritabanı göndericez
         public virtual ISession OpenSession()
         {
             return SessionFactory.OpenSession();   
