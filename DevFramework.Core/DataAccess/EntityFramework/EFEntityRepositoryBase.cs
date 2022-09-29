@@ -43,7 +43,7 @@ namespace DevFramework.Core.DataAccess.EntityFramework
             }
         }
 
-        public List<TEntity> GetList(Expression<Func<TEntity, bool>> filter)//filterdan gelen değer yok ise,ilgili TEntity'e Set ile DbContext'ine abone oluyoruz,filtre doluysa where şartına filterı gönderip çekiyoruz.
+        public List<TEntity> GetList(Expression<Func<TEntity, bool>> filter=null)//filterdan gelen değer yok ise,ilgili TEntity'e Set ile DbContext'ine abone oluyoruz,filtre doluysa where şartına filterı gönderip çekiyoruz.
         {
             using (var context=new TContext())
             {
