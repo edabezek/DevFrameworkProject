@@ -69,8 +69,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\ICategoryDal.cs" />
     <Compile Include="Abstract\IProductDal.cs" />
+    <Compile Include="Concrete\EntityFramework\EFCategoryDal.cs" />
     <Compile Include="Concrete\EntityFramework\EFProductDal.cs" />
+    <Compile Include="Concrete\EntityFramework\Mapping\CategoryMap.cs" />
     <Compile Include="Concrete\EntityFramework\Mapping\ProductMap.cs" />
     <Compile Include="Concrete\EntityFramework\NorthwindContext.cs" />
     <Compile Include="Concrete\NHibernate\Helpers\SqlServerHelper.cs" />
