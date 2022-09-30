@@ -36,7 +36,7 @@ DevFramework.Core Katmaný
 					(Context kapanmadan) için de bir repository yazacaðýz.(Not: IQueryable , IEnumerable dan hýzlýdýr ve serverda sorgu yapar.)
 					-Table operasyonunda readonly yapýyoruz,Bir context'e attach olacaðýz ona baðlý olarak sorgu yapacaðýz.
 --EFEntityRepositoryBase : Burada iki nesneye ihtiyacýmýz olacak; TEntity:veritabaný nesnesi,TContext:orm implementasyonu almýþ nesne ,hangi contexti
-					gönderirsek onu alacak.
+					gönderirsek onu alacak.(Basitçe hangi entity için iþlem yapacaðýný söyleceycek.)
 --EFQueryableRepositoryBase : 
 					-Table kýsmýnda  bir tabloya attach	olup o tablo üzerinden hangi nesneyi verirsek query çalýþtýrmamýzý saðlayacak
 					-Context'e ihtiyacýmýz var, inject ediyoruz,böylelikle bu katmanýn herhangi bir baðlýlýðý olmayacak.

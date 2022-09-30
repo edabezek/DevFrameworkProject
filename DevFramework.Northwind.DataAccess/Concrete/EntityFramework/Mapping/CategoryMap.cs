@@ -15,7 +15,7 @@ namespace DevFramework.Northwind.DataAccess.Concrete.EntityFramework.Mapping
             ToTable(@"Categories", @"dbo");//tablo,şema
             HasKey(x => x.CategoryId);
             //kolonları bağlayalım
-            Property(x => x.CategoryId).HasColumnName("CategoryId");
+            Property(x => x.CategoryId).HasColumnName("CategoryID");
             Property(x => x.CategoryName).HasColumnName("CategoryName");
             
             //Property(x => x.ProductName).HasColumnName("ProductName");
