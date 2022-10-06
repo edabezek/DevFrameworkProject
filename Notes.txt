@@ -6,7 +6,10 @@ Core            : Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Val
 			Orm entegrasyonlarýný burada yaptýk
 Entities        : ComplexTypes, iki üç tablonun joini sonucu oluþan nesne 
 Mapping         : Veritabaný ile nesnelerimizin baðlantýsýný kurar,iliþkilendirilmesini saðlar.Türkçe veritabaný kullanýyorsak bunu yapmak zorundayýz
-Test            :Yaptýðýmýz iþlemlerin çalýþýp çalýþmadýðýný kontrol etmek için 
+Test            :Yaptýðýmýz iþlemlerin çalýþýp çalýþmadýðýný kontrol etmek için kullanacaðýz.Validation test için test framework kulladýk -Moq
+				Data oluþturmamýzý saðlayacak.
+				Bir katmaný test ederken diðer katmanlarla kesinlikle iletiþim kurmamalýyýz,iletiþim kurarsak entegrasyon testi olur.Sadece o katmaný
+				test etmeliyiz.
 
 
 
@@ -19,7 +22,7 @@ Kullanýlan Paketler :
 --DevFramework.DataAccess => Entity Framework 6.1.3 ,NHibernate 5.3.13,FluentNHibernate 3.1.0
 --DevFramework.DataAccess.Test => Entity Framework 6.1.3 
 --DevFramework.Businnes => Fluent Validation 11.2.2 ,PostSharp 4.2.17
---DevFramework.Businnes.Test =>PostSharp 4.2.17
+--DevFramework.Businnes.Test =>PostSharp 4.2.17,MOQ 4.18.2 ,Fluent Validation 11.2.2 
 --Pc için => PostSharp 4.2.17 
 
 Katmanlar       :
@@ -68,6 +71,13 @@ DevFramework.Businnes Katmaný
 					ile yapýyoruz.
 					FluentValidate'i kullanabilmek için PostSharp-lisanslama için- yükledik.Ve postharp dll yükledik.
 
+
+
+DevFramework.Businnes.Test Katmaný
+					Burada diðer katmanlarý test ederken kullanmamamýz gerektiði için,buna yönelik iþlem yapacaðýz.
+--ProductManagerTests : Burada product manager'ýn validationunu test edeceðiz.ProductManager , productDal'ý baþka katmandan alýr.
+					 Dolayýsýyla MOQ framework bize IProductDal için bir concrete oluþturacak.Database'e gitmemiþ olacaðýz.DataAcces,Core,Entites
+					 ve Businnes'e referans veriyoruz.
 
 NOT: Arayüzde hiçbir zaman Product'ýn deðerleri doðru mu gibi kontolleri yapmamalýyýz.Baþka arayüze geçince problem olur ,businnesde yapýlmalý.
 	Mvc'de modelStateIsValid ters kalýyor.(Clientside validation yapýlabilir.)
