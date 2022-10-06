@@ -12,11 +12,15 @@ Test            :Yaptýðýmýz iþlemlerin çalýþýp çalýþmadýðýný kontrol etmek için
 
 
 Proje Detaylarý : 
-			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak
+			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak.
+			Yeni bir teknoloji kullanacaksak bunlarýn hepsini klasörleyerek kullandýk.
 Kullanýlan Paketler : 
---DevFramework.Core => Entity Framework 6.1.3,NHibernate 5.3.13
+--DevFramework.Core => Entity Framework 6.1.3,NHibernate 5.3.13,Fluent Validation 11.2.2,PostSharp 4.2.17
 --DevFramework.DataAccess => Entity Framework 6.1.3 ,NHibernate 5.3.13,FluentNHibernate 3.1.0
 --DevFramework.DataAccess.Test => Entity Framework 6.1.3 
+--DevFramework.Businnes => Fluent Validation 11.2.2 ,PostSharp 4.2.17
+--DevFramework.Businnes.Test =>PostSharp 4.2.17
+--Pc için => PostSharp 4.2.17 
 
 Katmanlar       :
 DevFramework.Core Katmaný 
@@ -41,7 +45,30 @@ DevFramework.Core Katmaný
 					-Table kýsmýnda  bir tabloya attach	olup o tablo üzerinden hangi nesneyi verirsek query çalýþtýrmamýzý saðlayacak
 					-Context'e ihtiyacýmýz var, inject ediyoruz,böylelikle bu katmanýn herhangi bir baðlýlýðý olmayacak.
 					-Buradaki tablo DbSet'e karþýlýk geliyor, o yüzden önceden gönderilen entity'e göre abone olacak
---NHinernateHelper : burada nhibernate context karþýlýðý session yapýsýný kullanýr.					
+--NHinernateHelper : burada nhibernate context karþýlýðý session yapýsýný kullanýr.
+--ValidatorTool    : Gönderdiðimiz validator aracýna göre örneðin product,bunlara göre iþlem yapacak.Manager'da çaðýrýyoruz.
+--FluentValidationAspect : PostSharp kullanmak için OnMethodBoundaryAspect implemente ettik.OnEntry-metodun giriþinde ile metoda girdiðinde 
+					doðrulama yapmak için kullanýlýr.Yani FluentValidationAspect'i kullanan kimse metodun giriþinde bu metod devreye girecek.
+
+
+
 					
-DevFramework.DataAccess Katmaný 	
+DevFramework.Businnes Katmaný 	
+
+--Cross cutting concern (Kesiþen ilgililer): Validation ,cache ,authorization ,transaction yönetimi,performans yönetimi gibi iþlemleri iþ 
+                    katmanýnda kullanýrýz.Bu iþlemler businnesde ortak olarak gerçekleþtiriliyor.Bunlarý ayýrmak için Aspect Oriented kullanacaðýz.
+					AO ilgililerin ayrýlmasý prensibine dayanýr.AO kullanmak için postSharp yükleyip kullanacaðýz.
+
+--Businnes katmanda IProductService ve ProductManager oluþturduk.IPService'e birkaç metot ekledik ve core katmanýndaki metotlarla devam ettirdik.
+					Burada validasyon iþlemini yapacaðýz.Validasyon bir nesnenin format olarak uyumluluðu anlamýna gelir.
+					DataAnatotation ile yapýlan validasyonlar Solid'e aykýrý oluyor.Entity'e koyulan DA yanlýþ katmanda yazýlmýþ oluyor ve bir 
+					class içinde baþka iþlemler de yapmýþ oluyoruz.
+--ProductManager   : Burada validasyonu Aspect orianted ile kullanacaðýz. Add metodunda geçen product'ýn,db'ye eklenirken validation kurallýna 
+                    uyup uymadýðýna bakacaðýz.Fakat single responsibilty'den dolayý ValidatorTool'u kullanmayýp, bunu Aspect orianted
+					ile yapýyoruz.
+					FluentValidate'i kullanabilmek için PostSharp-lisanslama için- yükledik.Ve postharp dll yükledik.
+
+
+NOT: Arayüzde hiçbir zaman Product'ýn deðerleri doðru mu gibi kontolleri yapmamalýyýz.Baþka arayüze geçince problem olur ,businnesde yapýlmalý.
+	Mvc'de modelStateIsValid ters kalýyor.(Clientside validation yapýlabilir.)
 
