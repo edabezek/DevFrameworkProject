@@ -14,5 +14,7 @@ namespace DevFramework.Northwind.Business.Abstract
         Product Add(Product product);
         Product Update(Product product);
         Product Delete(Product product);
+        //Transaction işlemleri için metot,iki tane product gönderiyoruz
+        void TransactionalOperation(Product product1, Product product2);
     }
 }

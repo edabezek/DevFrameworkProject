@@ -18,6 +18,8 @@ Ninject        :DataAccess Layer'a eriþmek için Businnes'in constructor blogunda
 				bu da constructor injection ile yaptýk.Solid'e göre hiçbir katmanda diðer katmaný new'leyemeyiz.(Ayný katman içindeki diðer
 				nesneler için de geçerli) Bu yüzden Businnes katmanda Dependecy Injection configurasyonu yapacaðýz.Bunun için DI conteiner'ýný 
 				kullanacaðýz.
+Transaction     : Arka arkaya 3 iþlem yaptýk diyelim, ilk ikisi baþarýlý sonuncusu baþarýsýz oldu.Böyle bir durumda karar vermemiz gerekiyor ,önceki
+				iþlemleri geri mi alacaðýz yoksa böyle devam edeceðiz.
 
 
 Proje Detaylarý : 

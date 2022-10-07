@@ -80,7 +80,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aspects\PostSharp\FluentValidationAspect.cs" />
+    <Compile Include="Aspects\PostSharp\TransactionAspect\TransactionScopeAspect.cs" />
+    <Compile Include="Aspects\PostSharp\ValidationAspects\FluentValidationAspect.cs" />
     <Compile Include="CrossCuttingConcerns\Validation\FluentValidation\ValidatorTool.cs" />
     <Compile Include="DataAccess\EntityFramework\EFEntityRepositoryBase.cs" />
     <Compile Include="DataAccess\EntityFramework\EFQueryableRepositoryBase.cs" />
