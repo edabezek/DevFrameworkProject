@@ -10,16 +10,19 @@ using System.Text;
 using System.Threading.Tasks;
 using DevFramework.Core.Aspects;
 using DevFramework.Core.Aspects.PostSharp;
+using DevFramework.Core.DataAccess;
 
 namespace DevFramework.Northwind.Business.Concrete.Managers
 {
     public class ProductManager : IProductService
     {
+        
         private IProductDal _productDal;
-
-        public ProductManager(IProductDal productDal)//IProductDal vererek EF kullanacağız
+        //private IQueryableRepository<Product> _queryable;//Queryable'ı kullanmak istersek 
+        public ProductManager(IProductDal productDal/*, IQueryableRepository<Product> queryable*/)//IProductDal vererek EF kullanacağız
         {
             _productDal = productDal;
+            //_queryable = queryable;   
         }
         [FluentValidationAspect(typeof(ProductValidator))]//bize gelen product'ı ProductValidator kullanarak validate edeceğiz.
         public Product Add(Product product)
@@ -36,6 +39,8 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
         public List<Product> GetAll()
         {
             return _productDal.GetList();
+            //Queryable
+            //_queryable.Table.Where..
         }
 
         public Product GetById(int id)
