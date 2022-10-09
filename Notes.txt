@@ -1,11 +1,11 @@
 DataAccess      :Veri eriþim katmaný ,veritabanýnda insert-update-delete sorgularýný çalýþtýracaðýmýz katman. Orm implementasyonlarý bu katmanda.EF ile baþlayýp,NHiber
 				nate ekleyeceðiz.Abstract ile diðer katmalarýn veriye eriþim için kullancaðýmýz klasör.Böylece iþ katmaný EF yada NH'e baðlý olmayacak.
-Business        : Projeyi ilgilendiren iþ süreçlerini kodlarýz.Örneðin bir kiþinin ehliyete ihtiyacý var biz bu kiþiye ehliyet verelim
+Business        :Projeyi ilgilendiren iþ süreçlerini kodlarýz.Örneðin bir kiþinin ehliyete ihtiyacý var biz bu kiþiye ehliyet verelim
 			mi diye burada kodlarýz.Arayüz ile veritabaný iletiþimini saðladýk.
-Core            : Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Validasyon yönetimi,Rol bazlý güvenlik ve diðer araçlarýmýzý ,veritabaný
+Core            :Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Validasyon yönetimi,Rol bazlý güvenlik ve diðer araçlarýmýzý ,veritabaný
 			Orm entegrasyonlarýný burada yaptýk
-Entities        : ComplexTypes, iki üç tablonun joini sonucu oluþan nesne 
-Mapping         : Veritabaný ile nesnelerimizin baðlantýsýný kurar,iliþkilendirilmesini saðlar.Türkçe veritabaný kullanýyorsak bunu yapmak zorundayýz
+Entities        :ComplexTypes, iki üç tablonun joini sonucu oluþan nesne 
+Mapping         :Veritabaný ile nesnelerimizin baðlantýsýný kurar,iliþkilendirilmesini saðlar.Türkçe veritabaný kullanýyorsak bunu yapmak zorundayýz
 Test            :Yaptýðýmýz iþlemlerin çalýþýp çalýþmadýðýný kontrol etmek için kullanacaðýz.Validation test için test framework kulladýk -Moq
 				Data oluþturmamýzý saðlayacak.
 				Bir katmaný test ederken diðer katmanlarla kesinlikle iletiþim kurmamalýyýz,iletiþim kurarsak entegrasyon testi olur.Sadece o katmaný
@@ -18,8 +18,17 @@ Ninject        :DataAccess Layer'a eriþmek için Businnes'in constructor blogunda
 				bu da constructor injection ile yaptýk.Solid'e göre hiçbir katmanda diðer katmaný new'leyemeyiz.(Ayný katman içindeki diðer
 				nesneler için de geçerli) Bu yüzden Businnes katmanda Dependecy Injection configurasyonu yapacaðýz.Bunun için DI conteiner'ýný 
 				kullanacaðýz.
-Transaction     : Arka arkaya 3 iþlem yaptýk diyelim, ilk ikisi baþarýlý sonuncusu baþarýsýz oldu.Böyle bir durumda karar vermemiz gerekiyor ,önceki
+Transaction     :Arka arkaya 3 iþlem yaptýk diyelim, ilk ikisi baþarýlý sonuncusu baþarýsýz oldu.Böyle bir durumda karar vermemiz gerekiyor ,önceki
 				iþlemleri geri mi alacaðýz yoksa böyle devam edeceðiz.
+Cache			:Framework katmanýna ekleyeceðiz.Amacýmýz bir data istenildiðinde cache'e eklenecek-bir çok yöntem kullanýlabilir biz Memory cache
+				kullanacaðýz- bundan sonra o datayý kullanan kullancýlar eðer cache'de varsa datayý çekebilecek.
+				Output Caching, eðer bir data parametreleriyle beraber cachelenirse ,ayný parametrelerle ayný data çaðýrýldýðýnda tekrardan cache
+				yapýlsýn.
+				MemoryCache ,microsoft .net framework içinde default olarak gelen caching altyapýsýný kullanacaðýz.Bu altyapý datayý uygulama 
+				sunucusunun belleðinde tutacak ve uygulama sunucusunun belleðindeki dataya göre tüketip iþlem yapabilecek.Uygulama sunucusu tek ve
+				bir ISS üzerinden yayýn yapýyorsak memory cache performanslý olarak iþimizi görecektir.
+				MemCache,RedisCache vs de kullanýlabilir.(LodBalancing,farklý uygulama sunucularý kullanýyoruz veya cache'i ayrý sunucuda tutmak
+				istediðimizde kullanabiliriz.)
 
 
 Proje Detaylarý : 
@@ -60,6 +69,8 @@ DevFramework.Core Katmaný
 --ValidatorTool    : Gönderdiðimiz validator aracýna göre örneðin product,bunlara göre iþlem yapacak.Manager'da çaðýrýyoruz.
 --FluentValidationAspect : PostSharp kullanmak için OnMethodBoundaryAspect implemente ettik.OnEntry-metodun giriþinde ile metoda girdiðinde 
 					doðrulama yapmak için kullanýlýr.Yani FluentValidationAspect'i kullanan kimse metodun giriþinde bu metod devreye girecek.
+--ICacheManager		: Hangi data hangi parametrelerle çaðýrýlmýþsa ona göre cache oluþturmamýz gerekiyor,dolayýsyla her cache datasýna isim 
+					vermemiz gerekiyor.Ýsim verme iþlemini Uniq Key oluþturarak vereceðiz.
 
 
 
@@ -89,5 +100,5 @@ DevFramework.Businnes.Test Katmaný
 
 NOT: Arayüzde hiçbir zaman Product'ýn deðerleri doðru mu gibi kontolleri yapmamalýyýz.Baþka arayüze geçince problem olur ,businnesde yapýlmalý.
 	Mvc'de modelStateIsValid ters kalýyor.(Clientside validation yapýlabilir.)
-
+	
 	

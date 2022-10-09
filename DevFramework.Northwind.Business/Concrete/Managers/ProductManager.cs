@@ -14,6 +14,8 @@ using DevFramework.Core.DataAccess;
 using System.Transactions;
 using DevFramework.Core.Aspects.PostSharp.TransactionAspect;
 using DevFramework.Core.Aspects.PostSharp.ValidationAspects;
+using DevFramework.Core.CrossCuttingConcerns.Caching.Microsoft;
+using DevFramework.Core.Aspects.PostSharp.CacheAspects;
 
 namespace DevFramework.Northwind.Business.Concrete.Managers
 {
@@ -28,6 +30,7 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
             //_queryable = queryable;   
         }
         [FluentValidationAspect(typeof(ProductValidator))]//bize gelen product'ı ProductValidator kullanarak validate edeceğiz.
+        [CacheRemoveAspect(typeof(MemoryCacheManager))]//product ile ilgili bütün cacheleri silmeye yarayacak
         public Product Add(Product product)
         {
             //ValidatorTool.FluentValidate(new ProductValidator(), product);
@@ -38,7 +41,7 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
         {
             throw new NotImplementedException();
         }
-
+        [CacheAspect(typeof(MemoryCacheManager))]
         public List<Product> GetAll()
         {
             return _productDal.GetList();
