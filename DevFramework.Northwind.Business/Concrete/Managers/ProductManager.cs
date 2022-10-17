@@ -16,6 +16,8 @@ using DevFramework.Core.Aspects.PostSharp.TransactionAspect;
 using DevFramework.Core.Aspects.PostSharp.ValidationAspects;
 using DevFramework.Core.CrossCuttingConcerns.Caching.Microsoft;
 using DevFramework.Core.Aspects.PostSharp.CacheAspects;
+using DevFramework.Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
+using DevFramework.Core.Aspects.PostSharp.LogAspects;
 
 namespace DevFramework.Northwind.Business.Concrete.Managers
 {
@@ -42,6 +44,8 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
             throw new NotImplementedException();
         }
         [CacheAspect(typeof(MemoryCacheManager))]
+        [LogAspect(typeof(DatabaseLogger))]//db'ye yazar
+        [LogAspect(typeof(FileLogger))]//dosyaya yazar
         public List<Product> GetAll()
         {
             return _productDal.GetList();

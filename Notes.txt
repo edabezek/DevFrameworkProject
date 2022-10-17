@@ -29,13 +29,20 @@ Cache			:Framework katmanýna ekleyeceðiz.Amacýmýz bir data istenildiðinde cache'
 				bir ISS üzerinden yayýn yapýyorsak memory cache performanslý olarak iþimizi görecektir.
 				MemCache,RedisCache vs de kullanýlabilir.(LodBalancing,farklý uygulama sunucularý kullanýyoruz veya cache'i ayrý sunucuda tutmak
 				istediðimizde kullanabiliriz.)
-
+Log				:Framework katmanýnda yapacaðýz,Log4Net kullanacaðýz.Product Manager'daki Update matodunu loglamak istiyoruz bunun için kim hangi
+				metodu,hangi parametrelerle çalýþtýrdý bilgisini tutmamýz gerekir.Dolayýsýyla log'u tutacak datayý yönetebileceðimiz bir nesneye
+				ihtiyacýmýz var.Bu da LogParameter.
+				Loglama veritabanýna,metin dosyasýna,xml ,eventviewer,console yazýlabilir.Biz Json formatýnda tutacaðýz.Json formatýna bir nesneyi
+				çevirebilmemiz için onu Serializable hale getirmeliyiz.Bunu Layouts/JsonLayout'da yapacaðýz.
+				Biz logger'ý ne zaman çaðýrýrýz? Loglar ihtiyaca göre nerede çalýþacaðý deðiþir.Örneðin metodun baþýnda kim ne zaman hangi metodu 
+				çaðýrdý gibi birþey istersek o zaman OnEntry'le yapabiliriz.Metodun sonunda çaðýrabiliriz ve hata verdiðinde.
+				Log4Net için config dosyasý oluþturmalýyýz,MVCWebUI içine oluþturup,web config içine bunu kullanacaðýmýzý belirttik.
 
 Proje Detaylarý : 
 			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak.
 			Yeni bir teknoloji kullanacaksak bunlarýn hepsini klasörleyerek kullandýk.
 Kullanýlan Paketler : 
---DevFramework.Core => Entity Framework 6.1.3,NHibernate 5.3.13,Fluent Validation 11.2.2,PostSharp 4.2.17
+--DevFramework.Core => Entity Framework 6.1.3,NHibernate 5.3.13,Fluent Validation 11.2.2,PostSharp 4.2.17,Log4Net 2.21.0
 --DevFramework.DataAccess => Entity Framework 6.1.3 ,NHibernate 5.3.13,FluentNHibernate 3.1.0
 --DevFramework.DataAccess.Test => Entity Framework 6.1.3 
 --DevFramework.Businnes => Fluent Validation 11.2.2 ,PostSharp 4.2.17,Ninject 3.3.6
@@ -71,7 +78,9 @@ DevFramework.Core Katmaný
 					doðrulama yapmak için kullanýlýr.Yani FluentValidationAspect'i kullanan kimse metodun giriþinde bu metod devreye girecek.
 --ICacheManager		: Hangi data hangi parametrelerle çaðýrýlmýþsa ona göre cache oluþturmamýz gerekiyor,dolayýsyla her cache datasýna isim 
 					vermemiz gerekiyor.Ýsim verme iþlemini Uniq Key oluþturarak vereceðiz.
-
+--LogParameter      : Burada metot parametresinin ismini ,deðerini ve tipini tutuyoruz.
+--LogDetail			:Ýhtiyaç duyduðumuz metodun bilgileri tutuyoruz.
+--LoggerService		:Farklý ortamlarda farklý loglama tekniklerini kullanmak için kullanacaðýz.Örnegin çalýþma ortamýnda debuglarý kaydedebiliriz.
 
 
 					
@@ -97,6 +106,14 @@ DevFramework.Businnes.Test Katmaný
 --ProductManagerTests : Burada product manager'ýn validationunu test edeceðiz.ProductManager , productDal'ý baþka katmandan alýr.
 					 Dolayýsýyla MOQ framework bize IProductDal için bir concrete oluþturacak.Database'e gitmemiþ olacaðýz.DataAcces,Core,Entites
 					 ve Businnes'e referans veriyoruz.
+
+
+DevFramework.MvcWebUI Katmaný 
+
+--log4net.Config	:Yaptýðýmýz loglarla ilgili config dosyasýna ihtihyacýmýz var.Bu config dosyasýný kullandýðýmýzý web config'e yazýyoruz.
+					Loglarý yazabilmek için db'de Logs tablosu oluþturduk.
+
+
 
 NOT: Arayüzde hiçbir zaman Product'ýn deðerleri doðru mu gibi kontolleri yapmamalýyýz.Baþka arayüze geçince problem olur ,businnesde yapýlmalý.
 	Mvc'de modelStateIsValid ters kalýyor.(Clientside validation yapýlabilir.)
