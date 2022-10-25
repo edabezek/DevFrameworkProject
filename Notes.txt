@@ -37,7 +37,8 @@ Log				:Framework katmanýnda yapacaðýz,Log4Net kullanacaðýz.Product Manager'daki
 				Biz logger'ý ne zaman çaðýrýrýz? Loglar ihtiyaca göre nerede çalýþacaðý deðiþir.Örneðin metodun baþýnda kim ne zaman hangi metodu 
 				çaðýrdý gibi birþey istersek o zaman OnEntry'le yapabiliriz.Metodun sonunda çaðýrabiliriz ve hata verdiðinde.
 				Log4Net için config dosyasý oluþturmalýyýz,MVCWebUI içine oluþturup,web config içine bunu kullanacaðýmýzý belirttik.
-				Bütün Manager'lar için loglama yapmak istersek, Assembly seviyesinde yapmamýz gerek.Businnes'da Properties altýna ekliyoruz.
+				Bütün Manager'lar için loglama veya Exception yapmak istersek, Assembly seviyesinde yapmamýz gerek.Businnes'da Properties altýna 
+				ekliyoruz.
 
 Proje Detaylarý : 
 			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak.
