@@ -37,6 +37,7 @@ Log				:Framework katmanýnda yapacaðýz,Log4Net kullanacaðýz.Product Manager'daki
 				Biz logger'ý ne zaman çaðýrýrýz? Loglar ihtiyaca göre nerede çalýþacaðý deðiþir.Örneðin metodun baþýnda kim ne zaman hangi metodu 
 				çaðýrdý gibi birþey istersek o zaman OnEntry'le yapabiliriz.Metodun sonunda çaðýrabiliriz ve hata verdiðinde.
 				Log4Net için config dosyasý oluþturmalýyýz,MVCWebUI içine oluþturup,web config içine bunu kullanacaðýmýzý belirttik.
+				Bütün Manager'lar için loglama yapmak istersek, Assembly seviyesinde yapmamýz gerek.Businnes'da Properties altýna ekliyoruz.
 
 Proje Detaylarý : 
 			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak.
@@ -47,6 +48,7 @@ Kullanýlan Paketler :
 --DevFramework.DataAccess.Test => Entity Framework 6.1.3 
 --DevFramework.Businnes => Fluent Validation 11.2.2 ,PostSharp 4.2.17,Ninject 3.3.6
 --DevFramework.Businnes.Test =>PostSharp 4.2.17,MOQ 4.18.2 ,Fluent Validation 11.2.2 
+--DevFramework.MvcWebUI =>Entity Framework 6.1.3, PostSharp 4.2.17
 --Pc için => PostSharp 4.2.17 
 
 Katmanlar       :

@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using DevFramework.Core.Aspects.PostSharp.LogAspects;
+using DevFramework.Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -13,6 +15,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+//Assembly seviyesi loglama , AttributeTargetTypes ile istediğimiz sınıfları loglayabiliyoruz,Namespace'i uyan-bütün manager'ları loglayacak
+[assembly: LogAspect(typeof(FileLogger),AttributeTargetTypes= "DevFramework.Northwind.Business.Concrete.Managers.*")]
+//[assembly: LogAspect(typeof(FileLogger), AttributeTargetTypes = "DevFramework.Northwind.Business.Concrete.Managers.Get*")] //yada get ile başlayan
+//[assembly: LogAspect(typeof(FileLogger), AttributeTargetTypes = "DevFramework.Northwind.Business.Concrete.Managers.*Add*")] içinde add geçenler
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from

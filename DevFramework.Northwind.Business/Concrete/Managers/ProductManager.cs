@@ -21,6 +21,7 @@ using DevFramework.Core.Aspects.PostSharp.LogAspects;
 
 namespace DevFramework.Northwind.Business.Concrete.Managers
 {
+    //[LogAspect(typeof(FileLogger))]//bütün product metotları yazacak
     public class ProductManager : IProductService
     {
         
@@ -33,6 +34,7 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
         }
         [FluentValidationAspect(typeof(ProductValidator))]//bize gelen product'ı ProductValidator kullanarak validate edeceğiz.
         [CacheRemoveAspect(typeof(MemoryCacheManager))]//product ile ilgili bütün cacheleri silmeye yarayacak
+        //[LogAspect(typeof(FileLogger))]
         public Product Add(Product product)
         {
             //ValidatorTool.FluentValidate(new ProductValidator(), product);
@@ -44,8 +46,8 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
             throw new NotImplementedException();
         }
         [CacheAspect(typeof(MemoryCacheManager))]
-        [LogAspect(typeof(DatabaseLogger))]//db'ye yazar
-        [LogAspect(typeof(FileLogger))]//dosyaya yazar
+        //[LogAspect(typeof(DatabaseLogger))]//db'ye yazar
+        //[LogAspect(typeof(FileLogger))]//dosyaya yazar
         public List<Product> GetAll()
         {
             return _productDal.GetList();
@@ -59,6 +61,7 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
         }
         //Transaction işlemleri
         [TransactionScopeAspect]
+        [FluentValidationAspect(typeof(ProductValidator))]
         public void TransactionalOperation(Product product1, Product product2)
         {
             //using (TransactionScope scope=new TransactionScope())//bunu her metodun içinde yazmamız gerektiğinden Aspect olarak yazacağız.
@@ -78,9 +81,11 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
 
 
             //yukaırdaki kod yerine aspect yazdık
-            _productDal.Add(product1);
+
+            _productDal.Add(product1);//product1 kurallara uyan 
             //Businnes works
-            _productDal.Update(product2);
+            _productDal.Update(product2);//product2 kurallara uymayan göndereceğiz
+            //Sonuc olarak product1 eklendiğinde ama product2 eklenemediğinde ,product1 işlemini geri almasını istiyoruz.
         }
 
         [FluentValidationAspect(typeof(ProductValidator))]
