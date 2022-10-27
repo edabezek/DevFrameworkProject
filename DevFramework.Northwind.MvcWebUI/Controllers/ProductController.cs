@@ -18,7 +18,7 @@ namespace DevFramework.Northwind.MvcWebUI.Controllers
             _productService = productService;
         }
 
-        // GET: Product
+        // GET: Product/Index
         public ActionResult Index()
         {
             var model = new ProductListViewModel

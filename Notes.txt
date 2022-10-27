@@ -44,6 +44,18 @@ Performans Yönetimi : Yazýlým tarafýndaki yavaþlýklarý tespit etmek adýna uygula
 				çalýþýyor,bunu tespit etmemiz gerekiyor.Bunun için performansý takip edebilmeliyiz.Bunun için metotlarýn baþýna ve sonuna bir 
 				kronometre koyacaðýz,bizim verdiðimiz metrikten daha yüksekse o zaman uyarý vermesini saðlayacaðýz.Bunu PerformanceAspect ile yapacaðýz.
 
+Rol Bazlý Kullanýcý Yönetimi : Post sharp kullanacaðýz,Asp.Net Mvc'de de Identity yapýsýný kullanarak Claim based Auth yapacaðýz.Ýlk önce veritabanýnda
+				User,UserRoles,Roles tablolarý oluþturduk.Bunlarýn iliþkilerinin koyulmamasý halinde veri kaçaðý oluþur,koyulmasý gerekir.
+				Bir rolun kontrolünü Aspect þeklinde yapacaðýz.Örneðin GetAll kýsmýný sadece belli role sahip kiþilerin görmesini istiyoruz.Bunun 
+				için metot baþýnda SecuredOperation kullanacaðýz.
+				Identity için kendi configurasyonumuzu CrossCuttingConcern'de Security altýna Identity nesnesi tanýmlayarak yapýyoruz.
+				Form Authentication, kullanýcý bilgilerini veritabanýnda tutulduðu ve sorgu ile alýndýðý sistemlerdir.(Session'da rolleri tutamýyoruz.)
+				Kendi Auth Helper'ýmýzý yazacaðýz,aslýnda Form Auth kullanýp ezeceðiz.Web klasörü ,web arayüzleri için(client olarak web) kullanýlacak
+				bir durum olduðu için buraya ekleyeceðiz.AuthenticationHelper kullanýcý bilgilerini alýr þifreler ve cookie'e basar.Cookie'yi okuyup
+				kiþinin kim olduðu vs bilgilerini okumak için AuthenticationHelper'ýn CreateAuthCookie metodu ile oluþturulan Cookie'nin uygulama 
+				boyunca kullanýlabilecek bir nesneye Identity'e çevirilmesi gerekiyor,ki kontollerimizi yapabilelim.
+				FormAuthhentication ticket'ýný bir Identity'e çevirmek için Core katmanýna Web klasörüne SecurityUtilities class'ý oluþturuyoruz.
+				
 
 Proje Detaylarý : 
 			Proje generic kýsýtlara göre oluþturulmuþtur.Orm toollarýnda geçiþ daha kolay olacak.

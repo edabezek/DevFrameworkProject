@@ -19,6 +19,7 @@ using DevFramework.Core.Aspects.PostSharp.CacheAspects;
 using DevFramework.Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 using DevFramework.Core.Aspects.PostSharp.LogAspects;
 using DevFramework.Core.Aspects.PostSharp.PerformanceAspects;
+using DevFramework.Core.Aspects.PostSharp.AuthorizationAspects;
 
 namespace DevFramework.Northwind.Business.Concrete.Managers
 {
@@ -50,8 +51,11 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
         //[LogAspect(typeof(DatabaseLogger))]//db'ye yazar
         //[LogAspect(typeof(FileLogger))]//dosyaya yazar
         [PerformanceCounterAspect(2)]
+        //[SecuredOperation(Roles="Admin,Editor")]//Get all metodunu sadece Admin ve Editor'lar görecek
+        [SecuredOperation(Roles = "Admin,Editor,Student")]
         public List<Product> GetAll()
         {
+            //Thread.Sleep(3000) ile geciktirip bakabilirsin.
             return _productDal.GetList();
             //Queryable
             //_queryable.Table.Where..
