@@ -20,6 +20,8 @@ using DevFramework.Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 using DevFramework.Core.Aspects.PostSharp.LogAspects;
 using DevFramework.Core.Aspects.PostSharp.PerformanceAspects;
 using DevFramework.Core.Aspects.PostSharp.AuthorizationAspects;
+using AutoMapper;
+using DevFramework.Core.Utilities.Mappings;
 
 namespace DevFramework.Northwind.Business.Concrete.Managers
 {
@@ -28,10 +30,12 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
     {
         
         private IProductDal _productDal;
+        private IMapper _mapper;
         //private IQueryableRepository<Product> _queryable;//Queryable'ı kullanmak istersek 
-        public ProductManager(IProductDal productDal/*, IQueryableRepository<Product> queryable*/)//IProductDal vererek EF kullanacağız
+        public ProductManager(IProductDal productDal,IMapper mapper/*, IQueryableRepository<Product> queryable*/)//IProductDal vererek EF kullanacağız
         {
             _productDal = productDal;
+            _mapper = mapper;   
             //_queryable = queryable;   
         }
         [FluentValidationAspect(typeof(ProductValidator))]//bize gelen product'ı ProductValidator kullanarak validate edeceğiz.
@@ -52,14 +56,39 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
         //[LogAspect(typeof(FileLogger))]//dosyaya yazar
         [PerformanceCounterAspect(2)]
         //[SecuredOperation(Roles="Admin,Editor")]//Get all metodunu sadece Admin ve Editor'lar görecek
-        [SecuredOperation(Roles = "Admin,Editor,Student")]
+        //[SecuredOperation(Roles = "Admin,Editor,Student")]
         public List<Product> GetAll()
         {
+            //performance aspect için
             //Thread.Sleep(3000) ile geciktirip bakabilirsin.
-            return _productDal.GetList();
+            //return _productDal.GetList();
+
             //Queryable
             //_queryable.Table.Where..
+
+            //manuel mapping --serializable olması için yaptık- eğer bir kaç nesne mapping isterse böyle yapabiliriz.
+            //return _productDal.GetList().Select(p => new Product
+            //{
+            //    CategoryId = p.CategoryId,
+            //    ProductId = p.ProductId,    
+            //    ProductName = p.ProductName,
+            //    QuantityPerUnit = p.QuantityPerUnit,
+            //    UnitPrice = p.UnitPrice
+            //}).ToList();
+
+
+            //ninject kullanmadan mapper
+            //mapping kurallarını belirteceğiz  c:config
+            //source,destination
+            //List<Product> products = AutoMapperHelper.MapToSameTypeList<Product>(_productDal.GetList());
+            //return products;
+
+            //ninject module kullanarak auto mapper
+            var products=_mapper.Map<List<Product>>(_productDal.GetList());   
+            return products;    
         }
+
+
 
         public Product GetById(int id)
         {

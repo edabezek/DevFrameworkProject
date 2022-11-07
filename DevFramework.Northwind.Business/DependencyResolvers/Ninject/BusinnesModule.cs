@@ -23,6 +23,8 @@ namespace DevFramework.Northwind.Business.DependencyResolvers.Ninject
             //bu her istekte newlenir, inSingletonScope kullanarak ProductManager instance'ı oluşturulduğunda-içinde değer taşımaz,metot çağırımları gerçekleştirir- herkes aynı instance'ı kulanacak
             Bind<IProductService>().To<ProductManager>().InSingletonScope();
             Bind<IProductDal>().To<EFProductDal>().InSingletonScope();
+            //  Bind<IProductDal>().To<NhProductDal>().InSingletonScope();
+
 
             Bind<IUserService>().To<UserManager>().InSingletonScope();
             Bind<IUserDal>().To<EFUserDal>().InSingletonScope();

@@ -21,7 +21,11 @@ namespace DevFramework.Northwind.MvcWebUI
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             //Mvc'ye ControllerFactory olarak NinjectFactory kullanacaðýmýzý belirtiyoruz
-            ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory(new BusinnesModule()));
+            //ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory(new BusinnesModule()));
+
+            //auto mapper'ý businnes'e eklersek --mvc'den businnes'ý kullandýðýmýz zaman çalýþmasý için
+            ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory(new BusinnesModule(), new AutoMapperModule()));
+
         }
 
         //Asp.net mvc de kullanýcýnýn identity bilgilerini eriþilebilir olduðu zaman onu kullanabiliriz.

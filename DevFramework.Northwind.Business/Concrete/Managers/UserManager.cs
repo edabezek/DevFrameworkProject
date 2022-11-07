@@ -22,7 +22,7 @@ namespace DevFramework.Northwind.Business.Concrete.Managers
         {
             return _userDal.Get(u => u.UserName == userName && u.Password == password);
         }
-        //join 
+        //join kullanıcı rollerini getirir
         public List<UserRoleItem> GetUserRoles(User user)
         {
             return _userDal.GetUserRoles(user);
