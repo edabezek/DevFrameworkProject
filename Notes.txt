@@ -83,7 +83,13 @@ WCF			  : Servis odaklý bir mimaride (SOA) ,client server mimarileri baz alýnýr.
 			  key olarak ekliyoruz.
 			  Ayrýca ChannelFactory'i üretecek BusinnesModule yerine ServiceModule yazacaðýz.Ve bunu 
 			  Mvc'de çalýþtýrmak için global.asax dosyasýnda factory kýsmýnda belirteceðiz.
-
+Angular      : Mvc projesinin üstüne angular implemente edeceðiz.Bunun için öncelikle node kuracaðýz.
+			 tsScripts angular kodumuz için,Script js kodumuz için.TypeScript kodunu JavaScript'e Gulp ile çevireceðiz.
+			 tsScripts içine angular sitesinden indirdiðimiz cli-quickstart içindeki src dosyasýný atýyoruz.
+			 Ayrýca package.json dosyasýný Angular projesine ekliyoruz.Buraya gulp paketlerini de eklemeliyiz.
+			 Gulp, yazdýðýmýz scriptlerin bir yerden bir yere taþýnmasýný ,deðiþiklik olduðu zaman build edilip
+			 atýlmasýný saðlayacak.
+			 tsconfig.json , typescript konfigurasyonlarýný içerir.Burada outDir ekliyoruz.
 
 
 Angular
