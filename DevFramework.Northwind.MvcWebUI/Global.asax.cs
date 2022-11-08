@@ -24,7 +24,10 @@ namespace DevFramework.Northwind.MvcWebUI
             //ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory(new BusinnesModule()));
 
             //auto mapper'ý businnes'e eklersek --mvc'den businnes'ý kullandýðýmýz zaman çalýþmasý için
-            ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory(new BusinnesModule(), new AutoMapperModule()));
+            //ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory(new BusinnesModule(), new AutoMapperModule()));
+
+            //Wcf servisini kullanmak için :
+            ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory(new ServiceModule(), new AutoMapperModule()));
 
         }
 

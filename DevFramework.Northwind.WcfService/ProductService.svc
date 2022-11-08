@@ -1,0 +1,9 @@
+﻿<%@ ServiceHost Language="C#" 
+    Debug="true" 
+    Service="ProductService" 
+    CodeBehind="~/App_Code/ProductService.cs" %>
+
+//Service olarak Service class'ını kullandığını söyler.Bizim kullanmak istediğimiz class App_Code 
+//altındaki ProductService class'ı.
+
+//codebehind = ProductService değiştiriyoruz.
