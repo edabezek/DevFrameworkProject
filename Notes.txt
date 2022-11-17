@@ -1,118 +1,68 @@
-Katmanlar 
-
-Data Access  : Veritabanında insert-update-delete sorgularını çalıştıracağımız katman. Orm implementasyonları bu katmanda olur.Biz EF ve NHibernate ekledik. Abstract klasörü, diğer katmanların veriye erişim için kullanacağı klasör.Böylece iş katmanı EF yada NHibernate bağlı olmayacak.
-Business  :Bu katmanda projeyi ilgilendiren iş süreçlerini kodlarız.Örneğin bir kişinin ehliyete ihtiyacı var, biz bu kişiye ehliyet verelim mi diye burada kodlarız.
-Core :Framework katmanında ; Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Validasyon yönetimi,Rol bazlı güvenlik ve diğer araçlarımızı ,veritabanı Orm entegrasyonlarını burada yaparız.
-Entities  :Burada normal nesnelerin yanı sıra joinli tabloları tutarız.
-Mapping :Veritabanı ile nesnelerimizin bağlantısını kurar,ilişkilendirilmesini sağlar.Türkçe veritabanı kullanırsak bunu yapmak zorundayız.
-Test  :Yaptığımız işlemlerin çalışıp çalışmadığını kontrol etmek için Unit Test kullanacağız.(Validation test için test framework kulladık -Moq framework
-	Data oluşturmamızı sağlayacak.)
-
-Teknolojiler : 
-
-ILSpy	: .NET assembly decompiler , Businnes'deki Aspect'lerin kodlarımızda nasıl bir değişiklik yaptığına bakmak için kullanacağız.
-
-Ninject  : DataAccess Katmanına erişmek için Businnes'in constructor blogunda IProductDal injection yaptık Yani Product Manager'ı bize verilen bir IProductDal türündeki nesneye göre gerçekleştirdik.Solid'e göre hiçbir katmanda diğer katmanın instance’ını çağıramayız( new leyemeyiz). Bu yüzden Business katmanda Dependency Injection konfigürasyonu yapacağız.Bunun için DI container’ı olan Ninject’i kullanacağız. İnstance Factory bize business Module döndürür,orada da neyi nasıl çözeceğini belittik.Buraya AutoMapper de eklersek onu da yönlendirmiş olacağız.
-
-Transaction  : Arka arkaya 3 işlem yaptık diyelim, ilk ikisi başarılı sonuncusu başarısız oldu.Böyle bir durumda karar vermemiz gerekiyor ,önceki işlemleri geri mi alacağız yoksa böyle devam edeceğiz.Bunun için transaction oluşturulur.
-
-Cache	: Framework katmanına (Core) ekleyeceğiz. Bir data istenildiğinde cache’ye eklenecek. Bunun için birçok yöntem kullanılabilir, biz Memory Cache kullanacağız( bundan sonra o datayı kullanan kullanıcılar eğer cache'de varsa datayı çekebilecek).Output Caching’de, eğer bir data parametreleriyle beraber cachelenirse ,aynı parametrelerle aynı data çağrıldığında tekrardan veri çekmeyecek cache’deki data kullanılacak(Output ve Data Caching). 
-MemoryCache ,microsoft .net framework içinde default olarak gelen caching yapısıdır.Bu altyapı datayı uygulama sunucusunun belleğinde tutacak ve uygulama sunucusunun belleğindeki dataya göre tüketip işlem yapabilecek.Uygulama sunucusu, tek ve bir ISS üzerinden yayın yapıyorsak memory cache performanslı olarak işimizi görecektir. MemCache, RedisCache vs de kullanılabilir.(Load Balancing,farklı uygulama sunucuları kullanıyoruz veya cache'i ayrı sunucuda tutmak istediğimizde kullanabileceğimiz yapıdır.)
-Log  : Framework katmanında konfigürasyonunu Log4Net ile yaptık. Product Manager'daki Update metodunu loglamak istiyoruz bunun için kim hangi metodu,hangi parametrelerle çalıştırdı bilgisini tutmamız gerekir.Dolayısıyla log'u tutacak datayı yönetebileceğimiz bir nesneye ihtiyacımız var. Bu da LogParameter olacak. Loglama veritabanına,metin dosyasına,xml ,eventviewer,console vs yazılabilir.Biz Json formatında tutacağız.Json formatına bir nesneyi çevirebilmemiz için onu Serializable hale getirmeliyiz. Bunu Layouts/JsonLayout'da yapacağız(ayrıca bunun için classlara Serializable ekliyoruz).
-Loglar ihtiyaca göre nerede çalışacağı değişir.Örneğin metodun başında kim ne zaman hangi metodu çağırdı gibi birşey istersek o zaman OnEntry'le yapabiliriz.Metodun sonunda çağırabiliriz ve hata verdiğinde de.Log4Net için config dosyası oluşturmalıyız,bunu MVC Web UI içine oluşturup,web config içinde bunu kullanacağımızı belirttik.
-Bütün Manager'lar için performans ,loglama veya exception yapmak istersek, Assembly seviyesinde ekleme yapmamız gerek (Bu class business'da properties altında).
-
-Performans Yönetimi : Yazılım tarafındaki yavaşlıkları tespit etmek adına uygulamada herşey mi yavaş çalışıyor yoksa belli başlı metotlar mı yavaş çalışıyor,bunu tespit etmemiz gerekiyor.Bunun için performansı takip edebilmeliyiz.Metotların başına ve sonuna bir kronometre koyduk, bizim verdiğimiz metrikten daha yüksekse o zaman uyarı vermesini sağladık , bu yapıyı Performance Aspect class’ı ile yapacağız.
-
-Rol Bazlı Kullanıcı Yönetimi : Postsharp kullanıp, Asp.Net Mvc'de de Identity yapısını da kullanarak Claim bazlı Auth yapacağız.İlk önce veritabanında User,User Roles ve Roles tabloları oluşturduk(tabloların ilişkilerinin belirtilmemesi halinde veri kaçağı oluşur,koyulması gerekir).Bir rolun olup olmadığını Aspect oluşturup kontrol edeceğiz. Örneğin GetAll metodunu sadece belli role sahip kişilerin görmesini istiyoruz.Bunun için metot başında Secured Operation kullandık.Identity için kendi configurasyonumuzu, Cross Cutting Concern’de , Security altına, Identity nesnesi tanımlayarak yapıyoruz.(Form Authentication yöntemi, kullanıcı bilgilerinin veri tabanında tutulduğu ve sorgu ile alındığı sistemlerdir.) (Session'da rolleri tutamayız.) Kendi Authentication Helper'ımızı yazdık(aslında Form Auth kullanıp ezdik).Web klasörü ,web arayüzleri için(client olarak web) kullanılacak bir durum olduğundan buraya ekledik.Authentication Helper kullanıcı bilgilerini alır şifreler ve cookie’ye basar.Cookie’yi okuyup kişinin kim olduğu vs bilgilerini almak için Authentication Helper'ın Create Auth Cookie metodu ile oluşturulan Cookie'nin ,uygulama boyunca kullanılabilecek bir nesneye (Identity’ye),çevrilmesi gerekiyor ki kontrollerimizi  yapabilelim. FormAuthentication ticket’ını bir Identity'e çevirmek için Core katmanına Web klasörüne Security Utilities class oluşturduk.
-
-Web Api Katmanı : Api'lerimizi yazdığımız katman,api'lerin dışında kod yazmamalıyız. İşlemleri business üzerinden yürütmeliyiz( Arayüzün yerini api alır).Web Api'de kişi direkt controller’a istekte bulunuyor, bir modal-view-controller olmuyor, dolayısıyla security aspect buradan geçmiyor. Bunun için, bir AuthHandler yazıp ,biri bize istekte bulunduğu zaman mesajı yakalamak ve bunun sonucunda kişiyi (eğer bize kullanıcı adı ve şifre göndermişse) authenticate olmasını sağlayacağız. MessageHandler'ı istek kontrolü için yazdık.WepApi projesinde App_Start, WebApiConfig sınıfının içine konfigürasyonu yazıyoruz.Authentication bilgilerini veritabanından almak için IUserService'i AuthHandler'a enjekte ediyoruz,bunu InstanceFactory ile yaptık.
-
-AutoMapper    : Dependency Injection kullanarak verdik.Serileştirmeyi Business'da AutoMapper ile yaptık.
-WCF  : Servis odaklı bir mimaride (SOA) ,client server mimarileri baz alınır.İki pc olur biri asp.net diğeri wcf-service'i çalıştırır.Asp.net tamamen servis'ten desteklenir(dll'den businnes'e gitmeyip service üzerinden çalışır). Tüm mimariyi servis odaklı mı çalışmamız lazım yoksa bazı servisleri mi açmak istiyoruz,bunların yaklaşımı birbirinden
-farklıdır.Bizim bir asp.net projemiz var ,service'ler başka bir server'dan bize hizmet edecek,bu şekilde kullandık. IProductService'in sevis olabilmesi için ServiceContract ve OperationContract özellikleri belirtilmelidir.Bunları belirtmek alternatif olarak yerine Wcf katmanında App_Code klasörü altına ServiceContracts interface IProductDetailService 
-eklenebilir.Yada business katmanına ServiceContract altına yapılıp ProductDetailService Wcf'de kullanılabilir.Service.svc dosyasını ProductService.svc diye değiştirdik.Bu bizim yayın dosyamız.( Note : service.svc dosyası açıkken çalıştırırsak Acf test client editor gelir.) WebApi'de yada Mvc'de yaptığımız gibi connectionstring ekledik. Mvc tarafında Wcf servisini çağırdık(Normalde Wcf projesini çağırmanın en basit yolu,Mvc katmanına tıklayıp Add>Service Reference ile Proxy oluşturup eklenir.Bizimki client-server mimarisi olduğu için başka yöntem kullanacağız). Biz ChannelFactory ile runtime'da bir proxy oluşturup,onun üzerinden ilerleyeceğiz.Wcf Proxy ile Core katmanında proxy üreteceğiz, bunu Mvc'de çağıracağız.Mvc katmanında web.config dosyasına key olarak ekliyoruz. Ayrıca ChannelFactory'i üretecek BusinnesModule yerine ServiceModule yazacağız.Ve bunu  Mvc'de çalıştırmak için global.asax dosyasında factory kısmında belirttik.
-
-Angular   :  Mvc projesinin üstüne angular implemente edeceğiz.Bunun için öncelikle node kuracağız.TsScripts ,angular kodumuz için.Script, javascript kodumuz için.TypeScript kodunu JavaScript'e Gulp ile çevireceğiz.Package.json dosyasını Angular projesine ekliyoruz.Buraya gulp paketlerini de eklemeliyiz. Gulp, yazdığımız scriptlerin bir yerden bir yere taşınmasını ,değişiklik olduğu zaman build edilip atılmasını sağlayacak.Tsconfig.json , typescript konfigürasyonlarını içerir.Buraya outDir eklenir.
-
-Kullanılan Paketler : 
---DevFramework.Core => Entity Framework 6.1.3,NHibernate 5.3.13,Fluent Validation 11.2.2,PostSharp 4.2.17,Log4Net 2.21.0,AutoMapper.6.1.1
---DevFramework.DataAccess => Entityframework 6.1.3 ,NHibernate 5.3.13,FluentNHibernate 3.1.0
---DevFramework.DataAccess.Test => Entity Framework 6.1.3 
---DevFramework.Businnes => Fluent Validation 11.2.2 ,PostSharp 4.2.17,Ninject 3.3.6,AutoMapper.6.1.1
---DevFramework.Businnes.Test =>PostSharp 4.2.17,MOQ 4.18.2 ,Fluent Validation 11.2.2 
---DevFramework.MvcWebUI =>Entity Framework 6.1.3, PostSharp 4.2.17
---DevFramework.WebApi => WebApiContrib.IoC.Ninject 0.9.3 ,Ninject 3.3.6(aynı versiyona çekmelisin),Ninject.MVC5.3.3.0,Ninject.Web.Common.3.3.2,
- Ninject.Web.Common 3.3.2,Entity Framework 6.1.3 
---DevFramework.WcfService => EntityFramework.6.1.3
---Pc için => PostSharp 4.2.17 
-
-
 Katmanlar       :
-DevFramework.Core Katmanı 
+DevFramework.Core KatmanÄ± 
 
---IEntityRepository : where T : class ,referans tip olmalı
-					-new() newlenebilir olmalı
-					-IEntity ,sadece entity almasını sağlıyoruz.
-					-Liste döndürecek GetList'de Linq Expression kullandık, çünkü datanın tümü yada where koşulu ile belirtilmiş kısmını getirmek istiyoruz.Bu bağlamda bir metot delegesi göndereceğiz , func ile .filter hem boş gönderilebilir(yani herhangi bir filtre 
-göndermeyebilir,o zaman tümünü getirecek. ama filtre gönderirse datanın filtrelenmiş versiyonunu db den getirecek)
-					-Get ile tek nesne döndürebiliriz,burada da filtre yolladık
-					-Add ve Update,datanın eklenmiş hali ile döndüreceğiz.
-					-Delete de primary key ile silinmesini sağlayacağız
+--IEntityRepository : where T : class ,referans tip olmalÄ±
+					-new() newlenebilir olmalÄ±
+					-IEntity ,sadece entity almasÄ±nÄ± saÄŸlÄ±yoruz.
+					-Liste dÃ¶ndÃ¼recek GetList'de Linq Expression kullandÄ±k, Ã§Ã¼nkÃ¼ datanÄ±n tÃ¼mÃ¼ yada where koÅŸulu ile belirtilmiÅŸ kÄ±smÄ±nÄ± getirmek istiyoruz.Bu baÄŸlamda bir metot delegesi gÃ¶ndereceÄŸiz , func ile .filter hem boÅŸ gÃ¶nderilebilir(yani herhangi bir filtre 
+gÃ¶ndermeyebilir,o zaman tÃ¼mÃ¼nÃ¼ getirecek. ama filtre gÃ¶nderirse datanÄ±n filtrelenmiÅŸ versiyonunu db den getirecek)
+					-Get ile tek nesne dÃ¶ndÃ¼rebiliriz,burada da filtre yolladÄ±k
+					-Add ve Update,datanÄ±n eklenmiÅŸ hali ile dÃ¶ndÃ¼receÄŸiz.
+					-Delete de primary key ile silinmesini saÄŸlayacaÄŸÄ±z
 
---IQueryableRepository : Listlerle çalıştığımız zaman context'i açıp kapatırız.Queryable operasyonlarının, business tarafında çalıştırılabilmesi 
-					(Context kapanmadan) için de bir repository yazacağız.(Not: IQueryable , IEnumerable dan hızlıdır ve serverda sorgu yapar.)
-					-Table operasyonunda readonly yapıyoruz,Bir context'e attach olacağız ona bağlı olarak sorgu yapacağız.
---EFEntityRepositoryBase : Burada iki nesneye ihtiyacımız olacak; TEntity:veritabanı nesnesi,TContext:orm implementasyonu almış nesne ,hangi contexti
-					gönderirsek onu alacak.(Basitçe hangi entity için işlem yapacağını söyleceycek.)
+--IQueryableRepository : Listlerle Ã§alÄ±ÅŸtÄ±ÄŸÄ±mÄ±z zaman context'i aÃ§Ä±p kapatÄ±rÄ±z.Queryable operasyonlarÄ±nÄ±n, business tarafÄ±nda Ã§alÄ±ÅŸtÄ±rÄ±labilmesi 
+					(Context kapanmadan) iÃ§in de bir repository yazacaÄŸÄ±z.(Not: IQueryable , IEnumerable dan hÄ±zlÄ±dÄ±r ve serverda sorgu yapar.)
+					-Table operasyonunda readonly yapÄ±yoruz,Bir context'e attach olacaÄŸÄ±z ona baÄŸlÄ± olarak sorgu yapacaÄŸÄ±z.
+--EFEntityRepositoryBase : Burada iki nesneye ihtiyacÄ±mÄ±z olacak; TEntity:veritabanÄ± nesnesi,TContext:orm implementasyonu almÄ±ÅŸ nesne ,hangi contexti
+					gÃ¶nderirsek onu alacak.(BasitÃ§e hangi entity iÃ§in iÅŸlem yapacaÄŸÄ±nÄ± sÃ¶yleceycek.)
 --EFQueryableRepositoryBase : 
-					-Table kısmında  bir tabloya attach	olup o tablo üzerinden hangi nesneyi verirsek query çalıştırmamızı sağlayacak
-					-Context'e ihtiyacımız var, inject ediyoruz,böylelikle bu katmanın herhangi bir bağlılığı olmayacak.
-					-Buradaki tablo DbSet'e karşılık geliyor, o yüzden önceden gönderilen entity'e göre abone olacak
---NHibernateHelper : burada nhibernate context karşılığı session yapısını kullanır.
---ValidatorTool    : Gönderdiğimiz validator aracına göre örneğin product,bunlara göre işlem yapacak.Manager'da çağırıyoruz.
---FluentValidationAspect : PostSharp kullanmak için OnMethodBoundaryAspect implemente ettik.OnEntry-metodun girişinde ile metoda girdiğinde 
-					doğrulama yapmak için kullanılır.Yani FluentValidationAspect'i kullanan kimse metodun girişinde bu metod devreye girecek.
---ICacheManager		: Hangi data hangi parametrelerle çağırılmışsa ona göre cache oluşturmamız gerekiyor, dolayısıyla her cache datasına isim 
-					vermemiz gerekiyor.İsim verme işlemini Unique Key oluşturarak vereceğiz.
---LogParameter      : Burada metot parametresinin ismini ,değerini ve tipini tutuyoruz.
---LogDetail			:İhtiyaç duyduğumuz metodun bilgileri tutuyoruz.
---LoggerService		:Farklı ortamlarda farklı loglama tekniklerini kullanmak için kullanacağız.Örneğin çalışma ortamında debugları kaydedebiliriz.
+					-Table kÄ±smÄ±nda  bir tabloya attach	olup o tablo Ã¼zerinden hangi nesneyi verirsek query Ã§alÄ±ÅŸtÄ±rmamÄ±zÄ± saÄŸlayacak
+					-Context'e ihtiyacÄ±mÄ±z var, inject ediyoruz,bÃ¶ylelikle bu katmanÄ±n herhangi bir baÄŸlÄ±lÄ±ÄŸÄ± olmayacak.
+					-Buradaki tablo DbSet'e karÅŸÄ±lÄ±k geliyor, o yÃ¼zden Ã¶nceden gÃ¶nderilen entity'e gÃ¶re abone olacak
+--NHibernateHelper : burada nhibernate context karÅŸÄ±lÄ±ÄŸÄ± session yapÄ±sÄ±nÄ± kullanÄ±r.
+--ValidatorTool    : GÃ¶nderdiÄŸimiz validator aracÄ±na gÃ¶re Ã¶rneÄŸin product,bunlara gÃ¶re iÅŸlem yapacak.Manager'da Ã§aÄŸÄ±rÄ±yoruz.
+--FluentValidationAspect : PostSharp kullanmak iÃ§in OnMethodBoundaryAspect implemente ettik.OnEntry-metodun giriÅŸinde ile metoda girdiÄŸinde 
+					doÄŸrulama yapmak iÃ§in kullanÄ±lÄ±r.Yani FluentValidationAspect'i kullanan kimse metodun giriÅŸinde bu metod devreye girecek.
+--ICacheManager		: Hangi data hangi parametrelerle Ã§aÄŸÄ±rÄ±lmÄ±ÅŸsa ona gÃ¶re cache oluÅŸturmamÄ±z gerekiyor, dolayÄ±sÄ±yla her cache datasÄ±na isim 
+					vermemiz gerekiyor.Ä°sim verme iÅŸlemini Unique Key oluÅŸturarak vereceÄŸiz.
+--LogParameter      : Burada metot parametresinin ismini ,deÄŸerini ve tipini tutuyoruz.
+--LogDetail			:Ä°htiyaÃ§ duyduÄŸumuz metodun bilgileri tutuyoruz.
+--LoggerService		:FarklÄ± ortamlarda farklÄ± loglama tekniklerini kullanmak iÃ§in kullanacaÄŸÄ±z.Ã–rneÄŸin Ã§alÄ±ÅŸma ortamÄ±nda debuglarÄ± kaydedebiliriz.
 
 
 					
-DevFramework.Business Katmanı 	
+DevFramework.Business KatmanÄ± 	
 
---Cross cutting concern (Kesişen ilgililer): Validation ,cache ,authorization ,transaction yönetimi,performans yönetimi gibi işlemleri iş 
-                    katmanında kullanırız.Bu işlemler business de ortak olarak gerçekleştiriliyor.Bunları ayırmak için Aspect Oriented kullanacağız.
-					AO ilgililerin ayrılması prensibine dayanır.AO kullanmak için postSharp yükleyip kullanacağız.
+--Cross cutting concern (KesiÅŸen ilgililer): Validation ,cache ,authorization ,transaction yÃ¶netimi,performans yÃ¶netimi gibi iÅŸlemleri iÅŸ 
+                    katmanÄ±nda kullanÄ±rÄ±z.Bu iÅŸlemler business de ortak olarak gerÃ§ekleÅŸtiriliyor.BunlarÄ± ayÄ±rmak iÃ§in Aspect Oriented kullanacaÄŸÄ±z.
+					AO ilgililerin ayrÄ±lmasÄ± prensibine dayanÄ±r.AO kullanmak iÃ§in postSharp yÃ¼kleyip kullanacaÄŸÄ±z.
 
---Business katmanda IProductService ve ProductManager oluşturduk.IPService'e birkaç metot ekledik ve core katmanındaki metotlarla devam ettirdik.
-					Burada validasyon işlemini yapacağız.Validasyon bir nesnenin format olarak uyumluluğu anlamına gelir.
-					DataAnatotation ile yapılan validasyonlar Solid'e aykırı oluyor.Entity'e koyulan DA yanlış katmanda yazılmış oluyor ve bir 
-					class içinde başka işlemler de yapmış oluyoruz.
---ProductManager   : Burada validasyonu Aspect oriented ile kullanacağız. Add metodunda geçen product'ın,db'ye eklenirken validation kuralına 
-                    uyup uymadığına bakacağız.Fakat single responsibility den dolayı Validator Tool'u kullanmayıp, bunu Aspect oriented
-					ile yapıyoruz.
-					FluentValidate'i kullanabilmek için PostSharp-lisanslama için- yükledik.Ve postharp dll yükledik.
+--Business katmanda IProductService ve ProductManager oluÅŸturduk.IPService'e birkaÃ§ metot ekledik ve core katmanÄ±ndaki metotlarla devam ettirdik.
+					Burada validasyon iÅŸlemini yapacaÄŸÄ±z.Validasyon bir nesnenin format olarak uyumluluÄŸu anlamÄ±na gelir.
+					DataAnatotation ile yapÄ±lan validasyonlar Solid'e aykÄ±rÄ± oluyor.Entity'e koyulan DA yanlÄ±ÅŸ katmanda yazÄ±lmÄ±ÅŸ oluyor ve bir 
+					class iÃ§inde baÅŸka iÅŸlemler de yapmÄ±ÅŸ oluyoruz.
+--ProductManager   : Burada validasyonu Aspect oriented ile kullanacaÄŸÄ±z. Add metodunda geÃ§en product'Ä±n,db'ye eklenirken validation kuralÄ±na 
+                    uyup uymadÄ±ÄŸÄ±na bakacaÄŸÄ±z.Fakat single responsibility den dolayÄ± Validator Tool'u kullanmayÄ±p, bunu Aspect oriented
+					ile yapÄ±yoruz.
+					FluentValidate'i kullanabilmek iÃ§in PostSharp-lisanslama iÃ§in- yÃ¼kledik.Ve postharp dll yÃ¼kledik.
 
 
 
-DevFramework.Business.Test Katmanı
-					Burada diğer katmanları test ederken kullanmamamız gerektiği için,buna yönelik işlem yapacağız.
---ProductManagerTests : Burada product manager'ın validationunu test edeceğiz.ProductManager , productDal'ı başka katmandan alır.
-					 Dolayısıyla MOQ framework bize IProductDal için bir concrete oluşturacak.Database'e gitmemiş olacağız.DataAccess,Core,Entities
+DevFramework.Business.Test KatmanÄ±
+					Burada diÄŸer katmanlarÄ± test ederken kullanmamamÄ±z gerektiÄŸi iÃ§in,buna yÃ¶nelik iÅŸlem yapacaÄŸÄ±z.
+--ProductManagerTests : Burada product manager'Ä±n validationunu test edeceÄŸiz.ProductManager , productDal'Ä± baÅŸka katmandan alÄ±r.
+					 DolayÄ±sÄ±yla MOQ framework bize IProductDal iÃ§in bir concrete oluÅŸturacak.Database'e gitmemiÅŸ olacaÄŸÄ±z.DataAccess,Core,Entities
 					 ve Business'e referans veriyoruz.
 
 
-DevFramework.MvcWebUI Katmanı 
+DevFramework.MvcWebUI KatmanÄ± 
 
---log4net.Config	:Yaptığımız loglarla ilgili config dosyasına ihtiyacımız var.Bu config dosyasını kullandığımızı web config'e yazıyoruz.
-					Logları yazabilmek için db'de Logs tablosu oluşturduk.
+--log4net.Config	:YaptÄ±ÄŸÄ±mÄ±z loglarla ilgili config dosyasÄ±na ihtiyacÄ±mÄ±z var.Bu config dosyasÄ±nÄ± kullandÄ±ÄŸÄ±mÄ±zÄ± web config'e yazÄ±yoruz.
+					LoglarÄ± yazabilmek iÃ§in db'de Logs tablosu oluÅŸturduk.
 
 
 
-NOT: Arayüzde hiçbir zaman Product'ın değerleri doğru mu gibi kontolleri yapmamalıyız.Başka arayüze geçince problem olur ,businnesde yapılmalı.
-	Mvc'de modelStateIsValid ters kalıyor.(Clientside validation yapılabilir.)
+NOT: ArayÃ¼zde hiÃ§bir zaman Product'Ä±n deÄŸerleri doÄŸru mu gibi kontolleri yapmamalÄ±yÄ±z.BaÅŸka arayÃ¼ze geÃ§ince problem olur ,businnesde yapÄ±lmalÄ±.
+	Mvc'de modelStateIsValid ters kalÄ±yor.(Clientside validation yapÄ±labilir.)
 	
 	
