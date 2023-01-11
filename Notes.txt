@@ -1,4 +1,17 @@
-Katmanlar       :
+## Katmanlar 
+
+**Data Access  :** Veritabanında insert-update-delete sorgularını çalıştıracağımız katman. Orm implementasyonları bu katmanda olur.Biz EF ve NHibernate ekledik. Abstract klasörü, diğer katmanların veriye erişim için kullanacağı klasör.Böylece iş katmanı EF yada NHibernate bağlı olmayacak.
+
+**Business  :** Bu katmanda projeyi ilgilendiren iş süreçlerini kodlarız.Örneğin bir kişinin ehliyete ihtiyacı var, biz bu kişiye ehliyet verelim mi diye burada kodlarız.
+
+**Core :** Framework katmanında ; Loglama,Cacheleme,Transaction yönetimi,Performans yönetimi,Validasyon yönetimi,Rol bazlı güvenlik ve diğer araçlarımızı ,veritabanı Orm entegrasyonlarını burada yaparız.
+
+**Entities  :** Burada normal nesnelerin yanı sıra joinli tabloları tutarız.
+
+**Mapping :** Veritabanı ile nesnelerimizin bağlantısını kurar,ilişkilendirilmesini sağlar.Türkçe veritabanı kullanırsak bunu yapmak zorundayız.
+
+**Test  :** Yaptığımız işlemlerin çalışıp çalışmadığını kontrol etmek için Unit Test kullanacağız.(Validation test için test framework kulladık -Moq framework data oluşturmamızı sağlayacak.)
+
 DevFramework.Core Katmanı 
 
 --IEntityRepository : where T : class ,referans tip olmalı
